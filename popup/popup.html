@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="header">
+    <h2>TabVault <span class="author-text">by Gunsou</span></h2>
+    <span class="count-badge" id="count">0 groups</span>
+  </div>
+
+  <div class="save-box">
+    <input type="text" id="groupName" placeholder="Category / Tag" autofocus />
+    <textarea id="noteText" placeholder="Note"></textarea>
+    
+    <div class="reminder-row">
+      <label for="reminderTime">Reminder:</label>
+      <select id="reminderTime">
+        <option value="0">None</option>
+        <option value="1">1 Minute (Test)</option>
+        <option value="60">1 Hour</option>
+        <option value="1440">1 Day</option>
+        <option value="4320">3 Days</option>
+      </select>
+    </div>
+
+    <div class="btn-group">
+      <button id="saveAllBtn" class="primary-btn">Stash All Tabs</button>
+      <button id="saveCurrentBtn" class="secondary-btn">Stash Current</button>
+    </div>
+  </div>
+
+  <div class="search-box">
+    <input type="text" id="searchInput" placeholder="Search notes, tags, or URLs..." />
+  </div>
+
+  <div id="vaultList" class="vault-list"></div>
+
+  <div class="footer">
+    <a href="https://ko-fi.com/wireframe" target="_blank" class="tip-link">☕ Buy me a tea!</a>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

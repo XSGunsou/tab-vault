@@ -1,0 +1,30 @@
+{
+  "manifest_version": 3,
+  "name": "TabVault",
+  "version": "1.0",
+  "description": "Save tabs, attach notes, categorize groups, and set reminders.",
+  "icons": {
+    "128": "icon.png"
+  },
+  "permissions": [
+    "tabs",
+    "storage",
+    "alarms",
+    "notifications"
+  ],
+  "action": {
+    "default_popup": "popup/popup.html"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "commands": {
+    "_execute_action": {
+      "suggested_key": {
+        "default": "Alt+Shift+S",
+        "mac": "Alt+Shift+S"
+      },
+      "description": "Open TabVault"
+    }
+  }
+}
