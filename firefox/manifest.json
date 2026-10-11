@@ -37,7 +37,10 @@
   },
   "browser_specific_settings": {
     "gecko": {
-      "id": "tabvault@gunsou.com"
+      "id": "tabvault@wireframe.com",
+      "data_collection_permissions": {
+        "required": ["none"]
+      }
     }
   }
 }

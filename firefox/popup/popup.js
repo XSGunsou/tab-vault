@@ -50,7 +50,11 @@ async function renderVault(searchTerm = "") {
   const { vault } = await chrome.storage.local.get({ vault: [] });
   const container = document.getElementById("vaultList");
   document.getElementById("count").textContent = `${vault.length} group${vault.length === 1 ? "" : "s"}`;
-  container.innerHTML = "";
+  
+  // Clear container cleanly
+  while (container.firstChild) {
+    container.removeChild(container.firstChild);
+  }
 
   const term = searchTerm.toLowerCase();
   const filtered = vault.filter(item => {
@@ -62,7 +66,13 @@ async function renderVault(searchTerm = "") {
   });
 
   if (filtered.length === 0) {
-    container.innerHTML = `<div style="text-align:center; color:#71717a; font-size:12px; padding:12px;">No matching tab groups</div>`;
+    const emptyDiv = document.createElement("div");
+    emptyDiv.style.textAlign = "center";
+    emptyDiv.style.color = "#71717a";
+    emptyDiv.style.fontSize = "12px";
+    emptyDiv.style.padding = "12px";
+    emptyDiv.textContent = "No matching tab groups";
+    container.appendChild(emptyDiv);
     return;
   }
 
@@ -71,40 +81,68 @@ async function renderVault(searchTerm = "") {
 
     const card = document.createElement("div");
     card.className = "group-card";
-    card.innerHTML = `
-      <div class="group-title">${item.category} • ${item.tabs.length} tabs (${item.date})${hasIncognito ? " 🕶" : ""}</div>
-      ${item.note ? `<div class="group-note">“${item.note}”</div>` : ""}
-      <div class="tab-links hidden">
-        ${item.tabs.map(t => `
-          <a href="${t.url}" target="_blank" class="tab-link" title="${t.url}">
-            ${t.title}
-          </a>
-        `).join("")}
-      </div>
-      <div class="card-actions">
-        <button class="view-btn">View Tabs</button>
-        <button class="primary-btn restore-btn">Restore All</button>
-        <button class="delete-btn">Delete</button>
-      </div>
-    `;
 
-    const viewBtn = card.querySelector(".view-btn");
-    const linksContainer = card.querySelector(".tab-links");
+    // Title header
+    const titleDiv = document.createElement("div");
+    titleDiv.className = "group-title";
+    titleDiv.textContent = `${item.category} • ${item.tabs.length} tabs (${item.date})${hasIncognito ? " 🕶" : ""}`;
+    card.appendChild(titleDiv);
+
+    // Note preview (if present)
+    if (item.note) {
+      const noteDiv = document.createElement("div");
+      noteDiv.className = "group-note";
+      noteDiv.textContent = `“${item.note}”`;
+      card.appendChild(noteDiv);
+    }
+
+    // Tab links container
+    const linksContainer = document.createElement("div");
+    linksContainer.className = "tab-links hidden";
+    item.tabs.forEach(t => {
+      const link = document.createElement("a");
+      link.href = t.url;
+      link.target = "_blank";
+      link.className = "tab-link";
+      link.title = t.url;
+      link.textContent = t.title;
+      linksContainer.appendChild(link);
+    });
+    card.appendChild(linksContainer);
+
+    // Action buttons container
+    const actionsDiv = document.createElement("div");
+    actionsDiv.className = "card-actions";
+
+    const viewBtn = document.createElement("button");
+    viewBtn.className = "view-btn";
+    viewBtn.textContent = "View Tabs";
     viewBtn.onclick = () => {
       const isHidden = linksContainer.classList.toggle("hidden");
       viewBtn.textContent = isHidden ? "View Tabs" : "Hide Tabs";
     };
 
-    card.querySelector(".restore-btn").onclick = () => {
+    const restoreBtn = document.createElement("button");
+    restoreBtn.className = "primary-btn restore-btn";
+    restoreBtn.textContent = "Restore All";
+    restoreBtn.onclick = () => {
       item.tabs.forEach(t => chrome.tabs.create({ url: t.url }));
     };
 
-    card.querySelector(".delete-btn").onclick = async () => {
+    const deleteBtn = document.createElement("button");
+    deleteBtn.className = "delete-btn";
+    deleteBtn.textContent = "Delete";
+    deleteBtn.onclick = async () => {
       const updatedVault = vault.filter(v => v.id !== item.id);
       await chrome.storage.local.set({ vault: updatedVault });
       chrome.alarms.clear(item.id);
       renderVault(searchTerm);
     };
+
+    actionsDiv.appendChild(viewBtn);
+    actionsDiv.appendChild(restoreBtn);
+    actionsDiv.appendChild(deleteBtn);
+    card.appendChild(actionsDiv);
 
     container.appendChild(card);
   });
